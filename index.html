@@ -9,24 +9,24 @@
   <link href="https://fonts.googleapis.com/css2?family=Nothing+You+Could+Do&family=Nanum+Pen+Script&family=Inter:wght@300;400;500&family=Noto+Sans+KR:wght@300;400;500&display=swap" rel="stylesheet" />
   <style>
     :root {
-      --bg:       #f6f6f7;
-      --surface:  #eeeef0;
-      --accent:   #da5132;
-      --text:     #201e1b;
-      --muted:    #888480;
-      --border:   #d8d6d2;
-      --mono:     'Courier New', monospace;
-      --hand:     'Nothing You Could Do', cursive;
-      --hand-ko:  'Nanum Pen Script', cursive;
+      --bg:      #f6f6f7;
+      --surface: #eeeef0;
+      --accent:  #da5132;
+      --text:    #201e1b;
+      --muted:   #888480;
+      --border:  #d8d6d2;
+      --mono:    'Courier New', monospace;
+      --hand:    'Nothing You Could Do', cursive;
+      --hand-ko: 'Nanum Pen Script', cursive;
     }
 
     html[data-theme="dark"] {
-      --bg:       #201e1b;
-      --surface:  #2a2724;
-      --accent:   #da5132;
-      --text:     #f6f6f7;
-      --muted:    #7a7672;
-      --border:   #3a3632;
+      --bg:      #201e1b;
+      --surface: #2a2724;
+      --accent:  #da5132;
+      --text:    #f6f6f7;
+      --muted:   #7a7672;
+      --border:  #3a3632;
     }
 
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -42,7 +42,7 @@
       min-height: 100vh;
     }
 
-    /* Language switching */
+    /* ── Language ── */
     .en, .ko { display: none !important; }
     html[data-lang="en"] .en { display: block !important; }
     html[data-lang="ko"] .ko { display: block !important; }
@@ -51,51 +51,49 @@
     html[data-lang="ko"] span.ko,
     html[data-lang="ko"] label.ko { display: inline !important; }
 
-    /* Scroll reveal */
+    /* ── Reveal animations ── */
     .reveal {
       opacity: 0;
-      transform: translateY(28px);
-      transition: opacity 0.65s cubic-bezier(0.22, 1, 0.36, 1),
-                  transform 0.65s cubic-bezier(0.22, 1, 0.36, 1);
+      transform: translateY(24px);
+      transition: opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+                  transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
     }
-    .reveal.visible {
-      opacity: 1;
-      transform: translateY(0);
-    }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+
     .reveal-left {
       opacity: 0;
-      transform: translateX(-20px);
-      transition: opacity 0.6s cubic-bezier(0.22, 1, 0.36, 1),
-                  transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+      transform: translateX(-18px);
+      transition: opacity 0.65s cubic-bezier(0.22, 1, 0.36, 1),
+                  transform 0.65s cubic-bezier(0.22, 1, 0.36, 1);
     }
     .reveal-left.visible { opacity: 1; transform: translateX(0); }
 
     /* Field focus lift */
     .field { transition: transform 0.2s ease; }
-    .field:focus-within { transform: translateX(4px); }
+    .field:focus-within { transform: translateX(3px); }
 
-    /* Accent dot pulse on header */
+    /* Accent dot pulse */
     .iin-mark::before {
-      animation: pulse 3s ease-in-out infinite;
+      animation: pulse 3.5s ease-in-out infinite;
     }
     @keyframes pulse {
       0%, 100% { opacity: 1; transform: scale(1); }
-      50% { opacity: 0.5; transform: scale(0.7); }
+      50% { opacity: 0.4; transform: scale(0.65); }
     }
 
-    /* Submit button: slide arrow on hover (already have translateX, upgrade) */
+    /* Submit shimmer */
     .submit-btn { position: relative; overflow: hidden; }
     .submit-btn::after {
       content: '';
       position: absolute;
       inset: 0;
-      background: rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.09);
       transform: translateX(-100%);
-      transition: transform 0.3s ease;
+      transition: transform 0.35s ease;
     }
     .submit-btn:hover::after { transform: translateX(0); }
 
-    /* Section label line draw on reveal */
+    /* Section line draw */
     .section-label::after {
       content: '';
       flex: 1;
@@ -103,11 +101,11 @@
       background: var(--border);
       transform: scaleX(0);
       transform-origin: left;
-      transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.2s;
+      transition: transform 0.65s cubic-bezier(0.22, 1, 0.36, 1) 0.15s;
     }
     .reveal.visible .section-label::after { transform: scaleX(1); }
 
-    /* Lang toggle */
+    /* ── Fixed controls ── */
     .lang-toggle {
       position: fixed;
       top: 2rem;
@@ -137,7 +135,6 @@
 
     .lang-btn:hover:not(.active) { color: var(--text); }
 
-    /* Theme toggle */
     .theme-toggle {
       position: fixed;
       top: 2rem;
@@ -151,34 +148,32 @@
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      transition: border-color 0.2s;
       color: var(--muted);
-      font-size: 14px;
+      transition: color 0.2s, border-color 0.2s;
     }
 
     .theme-toggle:hover { color: var(--text); border-color: var(--muted); }
-
     .icon-sun { display: none; }
     .icon-moon { display: block; }
     html[data-theme="dark"] .icon-sun { display: block; }
     html[data-theme="dark"] .icon-moon { display: none; }
 
-    /* Layout */
+    /* ── Layout ── */
     .page {
-      max-width: 640px;
+      max-width: 600px;
       margin: 0 auto;
-      padding: 7rem 2rem 6rem;
+      padding: 9rem 2rem 8rem;
     }
 
-    /* Header */
-    .header { margin-bottom: 4.5rem; }
+    /* ── Header ── */
+    .header { margin-bottom: 6rem; }
 
     .iin-mark {
       font-family: var(--mono);
       font-size: 10px;
-      letter-spacing: 0.2em;
+      letter-spacing: 0.22em;
       color: var(--muted);
-      margin-bottom: 2.5rem;
+      margin-bottom: 3rem;
       display: flex;
       align-items: center;
       gap: 10px;
@@ -194,53 +189,39 @@
     }
 
     .header h1 {
-      font-size: clamp(2rem, 6vw, 3rem);
+      font-size: clamp(2.2rem, 6vw, 3.2rem);
       font-weight: 300;
-      line-height: 1.2;
+      line-height: 1.15;
       letter-spacing: -0.03em;
-      margin-bottom: 1.75rem;
+      margin-bottom: 2.5rem;
       color: var(--text);
-    }
-
-    .header h1 .hand {
-      font-family: var(--hand);
-      font-size: 1.05em;
-      color: var(--accent);
-      font-weight: 400;
-    }
-
-    .header h1 .hand-ko {
-      font-family: var(--hand-ko);
-      font-size: 1.05em;
-      color: var(--accent);
-      font-weight: 400;
     }
 
     .header-body {
       color: var(--muted);
       font-size: 14px;
-      max-width: 500px;
-      line-height: 1.95;
+      max-width: 460px;
+      line-height: 2;
     }
 
     .divider {
       width: 100%;
       height: 1px;
       background: var(--border);
-      margin: 3.5rem 0;
+      margin: 5rem 0;
     }
 
-    /* Sections */
-    .form-section { margin-bottom: 3.5rem; }
+    /* ── Sections ── */
+    .form-section { margin-bottom: 5rem; }
 
     .section-label {
       font-family: var(--mono);
-      font-size: 10px;
-      letter-spacing: 0.18em;
+      font-size: 9px;
+      letter-spacing: 0.22em;
       color: var(--text);
       font-weight: 500;
       text-transform: uppercase;
-      margin-bottom: 1.75rem;
+      margin-bottom: 2.5rem;
       display: flex;
       align-items: center;
       gap: 12px;
@@ -249,19 +230,19 @@
     .section-intro {
       font-size: 13px;
       color: var(--muted);
-      line-height: 1.9;
-      margin-bottom: 1.75rem;
-      max-width: 480px;
+      line-height: 1.95;
+      margin-bottom: 2.5rem;
+      max-width: 440px;
       font-style: italic;
     }
 
-    /* Numbered questions */
+    /* ── Question numbering ── */
     .q-number {
       font-family: var(--mono);
       font-size: 9px;
       letter-spacing: 0.15em;
       color: var(--accent);
-      margin-bottom: 0.2rem;
+      margin-bottom: 0.25rem;
       display: block;
     }
 
@@ -275,8 +256,8 @@
       line-height: 1.5;
     }
 
-    /* Fields */
-    .field { margin-bottom: 2rem; }
+    /* ── Fields ── */
+    .field { margin-bottom: 2.5rem; }
 
     label {
       display: block;
@@ -289,7 +270,6 @@
 
     input[type="text"],
     input[type="email"],
-    input[type="url"],
     select,
     textarea {
       width: 100%;
@@ -301,7 +281,7 @@
       font-family: 'Inter', 'Noto Sans KR', sans-serif;
       font-size: 15px;
       font-weight: 300;
-      padding: 0.6rem 0;
+      padding: 0.65rem 0;
       outline: none;
       transition: border-color 0.2s;
       -webkit-appearance: none;
@@ -310,14 +290,13 @@
 
     input[type="text"]:focus,
     input[type="email"]:focus,
-    input[type="url"]:focus,
     select:focus,
     textarea:focus { border-bottom-color: var(--accent); }
 
     input::placeholder,
     textarea::placeholder { color: var(--border); }
 
-    textarea { resize: none; line-height: 1.7; }
+    textarea { resize: none; line-height: 1.75; }
 
     select {
       cursor: pointer;
@@ -327,24 +306,30 @@
       padding-right: 24px;
     }
 
-    select option { background: var(--bg); color: var(--text); }
-
     html[data-theme="dark"] select {
       background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%237a7672' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
     }
 
-    /* Pills */
-    .pill-group { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 0.5rem; }
+    select option { background: var(--bg); color: var(--text); }
+
+    .field-hint {
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 8px;
+      line-height: 1.7;
+    }
+
+    /* ── Pills ── */
+    .pill-group { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 0.6rem; }
     .pill-option { position: relative; }
 
-    .pill-option input[type="radio"],
-    .pill-option input[type="checkbox"] {
+    .pill-option input[type="radio"] {
       position: absolute; opacity: 0; width: 0; height: 0;
     }
 
     .pill-option label {
       display: inline-block;
-      padding: 6px 14px;
+      padding: 7px 16px;
       border: 1px solid var(--border);
       color: var(--muted);
       font-size: 12px;
@@ -355,39 +340,19 @@
       user-select: none;
     }
 
-    .pill-option input:checked + label {
+    .pill-option input[type="radio"]:checked + label {
       border-color: var(--accent);
       color: var(--accent);
-      background: rgba(218, 81, 50, 0.06);
+      background: rgba(218, 81, 50, 0.05);
     }
 
     .pill-option label:hover { border-color: var(--muted); color: var(--text); }
 
-    .field-hint {
-      font-size: 11px;
-      color: var(--muted);
-      margin-top: 7px;
-      line-height: 1.7;
-    }
-
-    /* Question style — Inter, with hand accent on key word */
-    .q-label {
-      display: block;
-      font-size: 14px;
-      font-weight: 400;
-      color: var(--text);
-      letter-spacing: 0.01em;
-      margin-bottom: 0.5rem;
-      line-height: 1.5;
-    }
-
-
-
-    /* Optional prompts */
+    /* ── Optional block ── */
     .optional-block {
       margin-top: 0.75rem;
       border-left: 1px solid var(--border);
-      padding-left: 1.25rem;
+      padding-left: 1.5rem;
     }
 
     .optional-tag {
@@ -396,35 +361,34 @@
       letter-spacing: 0.2em;
       color: var(--border);
       text-transform: uppercase;
-      margin-bottom: 0.85rem;
+      margin-bottom: 1rem;
       display: block;
     }
 
-    .optional-prompts { list-style: none; display: flex; flex-direction: column; gap: 0.6rem; }
+    .optional-prompts { list-style: none; display: flex; flex-direction: column; gap: 0.75rem; }
 
     .optional-prompts li {
       font-size: 13px;
       color: var(--muted);
-      line-height: 1.65;
+      line-height: 1.7;
       padding-left: 1rem;
       position: relative;
     }
 
     .optional-prompts li::before { content: '—'; position: absolute; left: 0; color: var(--border); }
 
-    /* Submit */
+    /* ── Submit ── */
     .submit-area {
-      margin-top: 4rem;
-      padding-top: 3rem;
+      margin-top: 5rem;
+      padding-top: 4rem;
       border-top: 1px solid var(--border);
     }
 
     .submit-note {
       font-size: 13px;
       color: var(--muted);
-      margin-bottom: 2rem;
+      margin-bottom: 2.5rem;
       line-height: 1.9;
-      max-width: 440px;
     }
 
     .submit-btn {
@@ -438,7 +402,7 @@
       font-size: 13px;
       font-weight: 400;
       letter-spacing: 0.08em;
-      padding: 14px 28px;
+      padding: 14px 30px;
       cursor: pointer;
       transition: opacity 0.2s;
       border-radius: 0;
@@ -447,105 +411,91 @@
     .submit-btn:hover { opacity: 0.85; }
     .submit-btn:active { opacity: 0.7; }
     .submit-btn:disabled { opacity: 0.4; cursor: not-allowed; }
-
     .submit-btn svg { width: 14px; height: 14px; transition: transform 0.2s; }
     .submit-btn:hover:not(:disabled) svg { transform: translateX(3px); }
 
-    /* Success + timer */
-    .success-message { display: none; padding: 3rem 0; }
+    /* ── Success screen ── */
+    .success-message { display: none; padding: 6rem 0 4rem; }
     .success-message.visible { display: block; }
 
     .success-heading {
-      font-size: clamp(1.6rem, 5vw, 2.4rem);
+      font-size: clamp(1.8rem, 5vw, 2.6rem);
       font-weight: 300;
-      letter-spacing: -0.02em;
-      margin-bottom: 0.75rem;
-      line-height: 1.2;
+      letter-spacing: -0.025em;
+      margin-bottom: 1.25rem;
+      line-height: 1.15;
+      color: var(--text);
     }
 
     .success-heading .hand {
       font-family: var(--hand);
-      font-size: 1.05em;
+      font-size: 1.0em;
       color: var(--accent);
       font-weight: 400;
     }
 
     .success-heading .hand-ko {
       font-family: var(--hand-ko);
-      font-size: 1.05em;
+      font-size: 1.0em;
       color: var(--accent);
-      font-weight: 400;
     }
 
     .success-sub {
       color: var(--muted);
       font-size: 13px;
-      line-height: 1.85;
-      margin-bottom: 2.5rem;
-      max-width: 400px;
+      line-height: 1.9;
+      margin-bottom: 5rem;
+      max-width: 340px;
     }
 
-    .timer-block {
-      width: 100%;
-      margin: 2.5rem 0 2rem;
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-    }
-
-    .timer-label {
-      font-family: var(--mono);
-      font-size: 9px;
-      letter-spacing: 0.25em;
-      color: var(--muted);
-      text-transform: uppercase;
-    }
-
-    .timer-units {
-      display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
-      gap: 1px;
-      background: var(--border);
-      border: 1px solid var(--border);
-      width: 100%;
-    }
-
-    .timer-unit {
-      background: var(--bg);
+    /* ── Sundial timer ── */
+    .sundial-wrap {
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
-      padding: 1.5rem 1rem;
-      gap: 0.5rem;
+      margin: 0 auto 5rem;
+      width: 100%;
+      max-width: 320px;
     }
 
-    .timer-digit {
-      font-family: var(--mono);
-      font-size: clamp(2.8rem, 10vw, 5rem);
-      font-weight: 400;
-      color: var(--text);
-      line-height: 1;
-      letter-spacing: -0.02em;
-      transition: color 0.3s;
-    }
-
-    .timer-digit.tick { color: var(--accent); }
-
-    .timer-unit-label {
+    .sundial-label {
       font-family: var(--mono);
       font-size: 8px;
-      letter-spacing: 0.2em;
+      letter-spacing: 0.28em;
       color: var(--muted);
       text-transform: uppercase;
+      margin-bottom: 2.5rem;
+      opacity: 0.7;
+    }
+
+    .sundial-svg-wrap {
+      width: 100%;
+      max-width: 260px;
+      margin-bottom: 2rem;
+    }
+
+    .sundial-time {
+      font-family: var(--mono);
+      font-size: clamp(1.4rem, 5vw, 2rem);
+      font-weight: 300;
+      color: var(--text);
+      letter-spacing: 0.08em;
+      text-align: center;
+    }
+
+    .sundial-done {
+      font-family: var(--hand);
+      font-size: 1.6rem;
+      color: var(--accent);
+      text-align: center;
     }
 
     .fill-again {
       display: block;
-      margin-top: 1.5rem;
+      margin: 3rem auto 0;
       font-size: 11px;
       color: var(--muted);
-      letter-spacing: 0.05em;
+      letter-spacing: 0.06em;
       text-decoration: underline;
       text-underline-offset: 3px;
       text-decoration-color: var(--border);
@@ -555,14 +505,15 @@
       padding: 0;
       font-family: 'Inter', sans-serif;
       transition: color 0.15s;
+      text-align: center;
     }
 
     .fill-again:hover { color: var(--text); }
 
-    /* Footer */
+    /* ── Footer ── */
     footer {
-      margin-top: 6rem;
-      padding-top: 2rem;
+      margin-top: 8rem;
+      padding-top: 2.5rem;
       border-top: 1px solid var(--border);
       display: flex;
       justify-content: space-between;
@@ -591,8 +542,9 @@
     .footer-links a:hover { color: var(--text); }
 
     @media (max-width: 600px) {
-      .page { padding: 6rem 1.25rem 4rem; }
+      .page { padding: 7rem 1.5rem 6rem; }
       .lang-toggle { top: 1.25rem; right: 1.25rem; }
+      .theme-toggle { top: 1.25rem; right: 7rem; }
       footer { flex-direction: column; align-items: flex-start; }
     }
   </style>
@@ -622,16 +574,12 @@
       </h1>
 
       <p class="header-body en">
-        hey, let's give your music something people remember.<br/><br/>
-        This is iin. I design visual identities, album artwork, and motion that help music leave a lasting impression. Every project starts with an idea worth noticing and ends with visuals that feel unmistakably yours.<br/><br/>
-        If you've found your way here, chances are something I made caught your attention. I'd love to hear what you're building.<br/><br/>
-        Take your time with the questions below. Tell me as much or as little as you'd like.
+        Since we are here, chances are something in our work caught your attention.<br/><br/>
+        We would love to hear what you're building. Take your time with the questions below — tell us as much or as little as you'd like.
       </p>
       <p class="header-body ko">
-        안녕하세요 — 당신의 음악에 사람들이 기억할 무언가를 만들어봐요.<br/><br/>
-        저는 이인입니다. 음악이 오래도록 인상을 남길 수 있도록 시각적 정체성, 앨범 아트워크, 모션을 디자인합니다. 모든 프로젝트는 주목할 만한 아이디어에서 시작해 — 당신만의 비주얼로 끝납니다.<br/><br/>
-        여기까지 오셨다면, 제 작업이 눈에 띄었을 거예요. 무엇을 만들고 있는지 꼭 듣고 싶어요.<br/><br/>
-        아래 질문들을 편안한 속도로 작성해 주세요. 많이 — 또는 조금만 — 말씀해 주셔도 괜찮아요.
+        여기까지 오셨다면, 우리 작업에서 무언가 눈에 띈 것이 있었을 거예요.<br/><br/>
+        무엇을 만들고 있는지 꼭 듣고 싶습니다. 아래 질문들을 편안한 속도로 작성해 주세요. 많이, 또는 조금만 말씀해 주셔도 괜찮아요.
       </p>
     </header>
 
@@ -642,7 +590,7 @@
       <input type="hidden" name="_language" id="lang-field" value="en" />
       <input type="hidden" name="_subject" value="New project inquiry — iin" />
 
-      <!-- 01 Contact -->
+      <!-- 01 You -->
       <div class="form-section reveal">
         <div class="section-label">
           <span class="en">01 — You</span>
@@ -669,17 +617,17 @@
           <label for="email" class="ko">이메일</label>
           <input type="email" id="email" name="email" data-fs-field required
             class="lang-placeholder"
-            data-placeholder-en="the best one to reach you on"
+            data-placeholder-en="the best address to reach you on"
             data-placeholder-ko="연락받으실 이메일"
-            placeholder="the best one to reach you on" />
+            placeholder="the best address to reach you on" />
           <span data-fs-error="email" style="font-size:11px;color:var(--accent);margin-top:4px;display:block;"></span>
         </div>
 
         <div class="field">
           <span class="q-number en">1.3</span>
           <span class="q-number ko">1.3</span>
-          <label for="artist-name" class="en">Artist / band / company name</label>
-          <label for="artist-name" class="ko">아티스트 / 밴드 / 회사명</label>
+          <label for="artist-name" class="en">Artist / band / project name</label>
+          <label for="artist-name" class="ko">아티스트 / 밴드 / 프로젝트명</label>
           <input type="text" id="artist-name" name="artist_name" data-fs-field required
             class="lang-placeholder"
             data-placeholder-en="as you'd like it to appear"
@@ -727,6 +675,20 @@
         <div class="field">
           <span class="q-number en">2.2</span>
           <span class="q-number ko">2.2</span>
+          <label for="additional-deliverables" class="en">Additional deliverables</label>
+          <label for="additional-deliverables" class="ko">추가 결과물</label>
+          <textarea id="additional-deliverables" name="additional_deliverables" rows="2"
+            class="lang-placeholder"
+            data-placeholder-en="social content, press kit, physical packaging or merch, release campaign assets"
+            data-placeholder-ko="소셜 콘텐츠, 프레스 킷, 실물 패키징 또는 머천다이즈, 릴리스 캠페인 자료 등"
+            placeholder="social content, press kit, physical packaging or merch, release campaign assets"></textarea>
+          <p class="field-hint en">Optional. Only if there's more beyond the primary deliverable above.</p>
+          <p class="field-hint ko">선택사항. 위의 주요 결과물 외에 추가로 필요한 것이 있다면.</p>
+        </div>
+
+        <div class="field">
+          <span class="q-number en">2.3</span>
+          <span class="q-number ko">2.3</span>
           <label for="timeline" class="en">Timeline</label>
           <label for="timeline" class="ko">일정</label>
           <select id="timeline" name="timeline" data-fs-field required>
@@ -739,20 +701,28 @@
         </div>
 
         <div class="field">
-          <span class="q-number en">2.3</span>
-          <span class="q-number ko">2.3</span>
+          <span class="q-number en">2.4</span>
+          <span class="q-number ko">2.4</span>
           <label for="budget" class="en">Budget range</label>
-          <label for="budget" class="ko">예산 범위</label>
-          <select id="budget" name="budget" data-fs-field required>
+          <label for="budget" class="ko">예산 범위가 있다면 편하게 알려주세요</label>
+          <select id="budget-en" name="budget" class="en" data-fs-field>
             <option value="" disabled selected></option>
-            <option value="Under $300">Under $300</option>
-            <option value="$300-$600">$300–$600</option>
-            <option value="$600-$1200">$600–$1,200</option>
-            <option value="$1200+">$1,200+</option>
-            <option value="Let's discuss">Let's talk about it</option>
+            <option value="Under $1,000">Under $1,000</option>
+            <option value="$1,000-$2,000">$1,000 – $2,000</option>
+            <option value="$2,000-$4,000">$2,000 – $4,000</option>
+            <option value="$4,000+">$4,000+</option>
+            <option value="Not sure yet">Not sure yet — happy to discuss</option>
           </select>
-          <p class="field-hint en">No number is too small or too big. Honesty helps us move faster.</p>
-          <p class="field-hint ko">어떤 숫자든 솔직하게 말씀해 주세요. 빠르게 진행하는 데 도움이 됩니다.</p>
+          <select id="budget-ko" name="budget_ko" class="ko" data-fs-field>
+            <option value="" disabled selected></option>
+            <option value="100만원 미만">100만원 미만</option>
+            <option value="100만-200만원">100만 – 200만원</option>
+            <option value="200만-400만원">200만 – 400만원</option>
+            <option value="400만원 이상">400만원 이상</option>
+            <option value="아직 미정">아직 미정 / 상담 후 결정</option>
+          </select>
+          <p class="field-hint en">Optional. Honest numbers help us scope the work well from the start.</p>
+          <p class="field-hint ko">선택사항. 솔직한 숫자가 처음부터 좋은 작업 범위를 잡는 데 도움이 됩니다.</p>
         </div>
       </div>
 
@@ -763,8 +733,8 @@
           <span class="ko">03 — 크리에이티브 브리프</span>
         </div>
 
-        <p class="section-intro en">This is the part that matters most. The logistics are important, but understanding how you think and what you feel about this project is what makes the work good. Take your time here.</p>
-        <p class="section-intro ko">이 부분이 가장 중요합니다. 물류적인 것도 중요하지만, 당신이 어떻게 생각하고 이 프로젝트에 대해 어떻게 느끼는지를 이해하는 것이 작업을 좋게 만드니까요. 천천히 작성해 주세요.</p>
+        <p class="section-intro en">This is the part that matters most. Beyond the logistics, understanding how you think and what you feel about this project is what makes the work truly good. Take your time here.</p>
+        <p class="section-intro ko">이 부분이 가장 중요합니다. 물류적인 사항을 넘어, 당신이 이 프로젝트에 대해 어떻게 생각하고 어떻게 느끼는지를 이해하는 것이 작업을 진정으로 좋게 만드니까요. 천천히 작성해 주세요.</p>
 
         <div class="field">
           <span class="q-number en">3.1</span>
@@ -781,13 +751,13 @@
         <div class="field">
           <span class="q-number en">3.2</span>
           <span class="q-number ko">3.2</span>
-          <span class="q-label en">Why now?</span>
-          <span class="q-label ko">왜 지금인가요?</span>
+          <span class="q-label en">What is the planned release date, and what makes this the right moment for this project?</span>
+          <span class="q-label ko">예정된 릴리스 날짜는 언제인가요? 그리고 지금이 이 프로젝트에 맞는 시점인 이유는 무엇인가요?</span>
           <textarea name="why_now" rows="3"
             class="lang-placeholder"
-            data-placeholder-en="what changed, what made this feel like the right moment"
-            data-placeholder-ko="무엇이 바뀌었는지, 지금이 맞는 순간이라고 느낀 이유"
-            placeholder="what changed, what made this feel like the right moment"></textarea>
+            data-placeholder-en="release date or window, what's driving the timing, any context around the launch"
+            data-placeholder-ko="릴리스 날짜 또는 기간, 타이밍을 결정한 이유, 런치와 관련된 맥락"
+            placeholder="release date or window, what's driving the timing, any context around the launch"></textarea>
         </div>
 
         <div class="field">
@@ -837,18 +807,6 @@
         <div class="field">
           <span class="q-number en">4.1</span>
           <span class="q-number ko">4.1</span>
-          <label for="deliverables" class="en">Deliverables</label>
-          <label for="deliverables" class="ko">결과물</label>
-          <textarea id="deliverables" name="deliverables" rows="3"
-            class="lang-placeholder"
-            data-placeholder-en="formats, sizes, platforms — what do you need handed over?"
-            data-placeholder-ko="파일 형식, 크기, 플랫폼 — 어떤 형태로 받으시고 싶으신가요?"
-            placeholder="formats, sizes, platforms — what do you need handed over?"></textarea>
-        </div>
-
-        <div class="field">
-          <span class="q-number en">4.2</span>
-          <span class="q-number ko">4.2</span>
           <label for="existing-assets" class="en">Existing assets</label>
           <label for="existing-assets" class="ko">기존 자료</label>
           <textarea id="existing-assets" name="existing_assets" rows="3"
@@ -859,8 +817,8 @@
         </div>
 
         <div class="field">
-          <span class="q-number en">4.3</span>
-          <span class="q-number ko">4.3</span>
+          <span class="q-number en">4.2</span>
+          <span class="q-number ko">4.2</span>
           <label for="decision-makers" class="en">Who else is involved in approvals?</label>
           <label for="decision-makers" class="ko">승인에 관여하는 다른 분이 있으신가요?</label>
           <input type="text" id="decision-makers" name="decision_makers"
@@ -871,8 +829,8 @@
         </div>
 
         <div class="field">
-          <span class="q-number en">4.4</span>
-          <span class="q-number ko">4.4</span>
+          <span class="q-number en">4.3</span>
+          <span class="q-number ko">4.3</span>
           <label for="references" class="en">References</label>
           <label for="references" class="ko">레퍼런스</label>
           <textarea id="references" name="references" rows="3"
@@ -883,8 +841,8 @@
         </div>
 
         <div class="field">
-          <span class="q-number en">4.5</span>
-          <span class="q-number ko">4.5</span>
+          <span class="q-number en">4.4</span>
+          <span class="q-number ko">4.4</span>
           <label for="anything-else" class="en">Anything else we should know?</label>
           <label for="anything-else" class="ko">알아야 할 다른 사항이 있나요?</label>
           <textarea id="anything-else" name="anything_else" rows="3"
@@ -895,28 +853,26 @@
         </div>
       </div>
 
-      <!-- 05 Optional prompts -->
+      <!-- 05 Deeper -->
       <div class="form-section reveal">
         <div class="section-label">
           <span class="en">05 — If you want to go deeper</span>
           <span class="ko">05 — 더 깊이 이야기하고 싶다면</span>
         </div>
 
-        <p class="section-intro en">None of these are required. Skip this entirely if you'd like. But if any of them spark something, there's a space below.</p>
-        <p class="section-intro ko">아래 질문들은 전혀 필수가 아닙니다. 건너뛰셔도 괜찮아요. 하지만 무언가 떠오르는 것이 있다면 아래에 자유롭게 적어주세요.</p>
+        <p class="section-intro en">None of these are required. But if any of them spark something, there's space below.</p>
+        <p class="section-intro ko">아래 질문들은 전혀 필수가 아닙니다. 하지만 무언가 떠오르는 것이 있다면 아래에 자유롭게 적어주세요.</p>
 
         <div class="optional-block">
           <span class="optional-tag en">take what you like</span>
           <span class="optional-tag ko">마음에 드는 것만 골라서</span>
           <ul class="optional-prompts en">
-            <li>What changed that made you decide to do this project now?</li>
             <li>When people discover your work for the first time, what misunderstanding do you wish they didn't have?</li>
             <li>If your project were a person walking into a room, what would people notice before it spoke?</li>
             <li>What part of your identity feels most difficult to communicate visually?</li>
             <li>Are there visual directions that feel completely wrong for you, even if they're popular?</li>
           </ul>
           <ul class="optional-prompts ko">
-            <li>이 프로젝트를 지금 하기로 결정하게 만든 변화가 있었나요?</li>
             <li>사람들이 처음 당신의 작업을 발견할 때, 어떤 오해를 갖지 않았으면 하나요?</li>
             <li>당신의 프로젝트가 방에 걸어 들어오는 사람이라면, 말을 하기 전에 무엇이 먼저 보일까요?</li>
             <li>당신의 정체성 중 시각적으로 표현하기 가장 어려운 부분은 무엇인가요?</li>
@@ -924,13 +880,13 @@
           </ul>
         </div>
 
-        <div class="field" style="margin-top:1.5rem;">
+        <div class="field" style="margin-top:2rem;">
           <label for="deeper" class="en">Your response (optional)</label>
           <label for="deeper" class="ko">자유 응답 (선택사항)</label>
           <textarea id="deeper" name="deeper_prompts" rows="5"
             class="lang-placeholder"
             data-placeholder-en="whatever feels true"
-            data-placeholder-ko="진실하게 느꺼지는 것이라면 무엇이든"
+            data-placeholder-ko="진실하게 느껴지는 것이라면 무엇이든"
             placeholder="whatever feels true"></textarea>
         </div>
       </div>
@@ -942,8 +898,8 @@
           <span class="ko">06 — 어떻게 연결되고 싶으신가요?</span>
         </div>
 
-        <p class="section-intro en">After this is sent, we'll read it and reach out. If a quick call feels right first, or if Instagram DMs feel more natural, just let us know.</p>
-        <p class="section-intro ko">양식을 보내주시면 읽고 연락드릴게요. 먼저 짧게 통화를 원하신다면, 또는 인스타그램 DM이 더 편하시다면 알려주세요.</p>
+        <p class="section-intro en">After this is sent, we'll reach out. If a quick call feels right first, or if Instagram DMs feel more natural, just let us know.</p>
+        <p class="section-intro ko">양식을 보내주시면 연락드릴게요. 먼저 짧게 통화를 원하신다면, 또는 인스타그램 DM이 더 편하시다면 알려주세요.</p>
 
         <div class="field">
           <label class="en">How would you prefer we reach out?</label>
@@ -978,11 +934,11 @@
           <label for="call-availability" class="ko">보통 어떤 시간대가 편하신가요?</label>
           <textarea id="call-availability" name="call_availability" rows="2"
             class="lang-placeholder"
-            data-placeholder-en="timezone and rough availability, we'll find something that works"
+            data-placeholder-en="timezone and rough availability — we'll make it work"
             data-placeholder-ko="시간대와 대략적인 가능 시간대를 알려주세요"
-            placeholder="timezone and rough availability, we'll find something that works"></textarea>
-          <p class="field-hint en">Calls are usually 20–30 minutes. No agenda, just a chance to talk through the project.</p>
-          <p class="field-hint ko">통화는 보통 20~30분입니다. 정해진 안건 없이 프로젝트에 대해 편하게 이야기하는 시간이에요.</p>
+            placeholder="timezone and rough availability — we'll make it work"></textarea>
+          <p class="field-hint en">Usually 20–30 minutes. No agenda — just a chance to talk through the project.</p>
+          <p class="field-hint ko">보통 20~30분. 정해진 안건 없이 프로젝트에 대해 편하게 이야기하는 시간이에요.</p>
         </div>
 
         <div class="field" id="ig-field" style="display:none;">
@@ -1011,37 +967,44 @@
 
     </form>
 
-    <!-- Success + timer -->
+    <!-- Success -->
     <div class="success-message" id="success-msg">
-      <p class="success-heading en">got it. <span class="hand">you'll hear from us.</span></p>
-      <p class="success-heading ko">잘 받았어요. <span class="hand-ko">곧 연락드릴게요.</span></p>
+
+      <p class="success-heading en">received.<br/><span class="hand">we'll be in touch.</span></p>
+      <p class="success-heading ko">잘 받았습니다.<br/><span class="hand-ko">곧 연락드릴게요.</span></p>
 
       <p class="success-sub en">Everything is read personally. Expect a response within 48 hours.</p>
       <p class="success-sub ko">모든 내용을 직접 읽습니다. 48시간 이내에 답변드릴게요.</p>
 
-      <div class="timer-block">
-        <span class="timer-label en">expect a response within</span>
-        <span class="timer-label ko">이내에 답변드려요</span>
-        <div class="timer-units">
-          <div class="timer-unit">
-            <span class="timer-digit" id="timer-h">48</span>
-            <span class="timer-unit-label en">hours</span>
-            <span class="timer-unit-label ko">시간</span>
-          </div>
-          <div class="timer-unit">
-            <span class="timer-digit" id="timer-m">00</span>
-            <span class="timer-unit-label en">minutes</span>
-            <span class="timer-unit-label ko">분</span>
-          </div>
-          <div class="timer-unit">
-            <span class="timer-digit" id="timer-s">00</span>
-            <span class="timer-unit-label en">seconds</span>
-            <span class="timer-unit-label ko">초</span>
-          </div>
+      <div class="sundial-wrap">
+        <span class="sundial-label en">expect a response within</span>
+        <span class="sundial-label ko">이내에 답변드려요</span>
+
+        <div class="sundial-svg-wrap">
+          <svg id="sundial-svg" viewBox="0 0 200 110" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <!-- Shadow marks - like hour markers on a sundial -->
+            <line x1="100" y1="100" x2="100" y2="10" stroke="var(--border)" stroke-width="0.5" opacity="0.4"/>
+            <line x1="100" y1="100" x2="30" y2="30" stroke="var(--border)" stroke-width="0.5" opacity="0.25"/>
+            <line x1="100" y1="100" x2="170" y2="30" stroke="var(--border)" stroke-width="0.5" opacity="0.25"/>
+            <line x1="100" y1="100" x2="10" y2="70" stroke="var(--border)" stroke-width="0.5" opacity="0.15"/>
+            <line x1="100" y1="100" x2="190" y2="70" stroke="var(--border)" stroke-width="0.5" opacity="0.15"/>
+            <!-- Arc track -->
+            <path d="M 10 100 A 90 90 0 0 1 190 100" stroke="var(--border)" stroke-width="0.75" opacity="0.5"/>
+            <!-- Progress arc -->
+            <path id="sundial-progress" d="M 10 100 A 90 90 0 0 1 190 100" stroke="var(--accent)" stroke-width="1" opacity="0.6" stroke-linecap="round"/>
+            <!-- Gnomon (centre pin) -->
+            <circle cx="100" cy="100" r="2.5" fill="var(--accent)" opacity="0.7"/>
+            <!-- Shadow dot on arc -->
+            <circle id="sundial-dot" cx="10" cy="100" r="3.5" fill="var(--accent)"/>
+          </svg>
         </div>
+
+        <div class="sundial-time" id="sundial-time">48:00:00</div>
+        <div class="sundial-done en" id="sundial-done" style="display:none;">done.</div>
+        <div class="sundial-done ko" id="sundial-done-ko" style="display:none;">완료.</div>
       </div>
 
-      <button class="fill-again en" onclick="resetForm()">fill in another project →</button>
+      <button class="fill-again en" onclick="resetForm()">submit another project →</button>
       <button class="fill-again ko" onclick="resetForm()">다른 프로젝트 문의하기 →</button>
     </div>
 
@@ -1058,19 +1021,19 @@
   </main>
 
   <script>
-    /* ── Language ── */
+    /* ── Theme ── */
     function toggleTheme() {
-      var current = document.documentElement.getAttribute('data-theme');
-      var next = current === 'dark' ? 'light' : 'dark';
+      var cur = document.documentElement.getAttribute('data-theme');
+      var next = cur === 'dark' ? 'light' : 'dark';
       document.documentElement.setAttribute('data-theme', next);
       localStorage.setItem('iin_theme', next);
     }
-
     (function() {
       var saved = localStorage.getItem('iin_theme');
       if (saved) document.documentElement.setAttribute('data-theme', saved);
     })();
 
+    /* ── Language ── */
     function setLang(lang) {
       document.documentElement.setAttribute('data-lang', lang);
       document.getElementById('lang-field').value = lang;
@@ -1082,43 +1045,76 @@
         if (ph) el.setAttribute('placeholder', ph);
       });
     }
-
     (function() {
-      var browserLang = navigator.language || navigator.userLanguage || 'en';
-      if (browserLang.startsWith('ko')) setLang('ko');
+      var bl = navigator.language || navigator.userLanguage || 'en';
+      if (bl.startsWith('ko')) setLang('ko');
     })();
 
     /* ── Scroll reveal ── */
     (function() {
       var els = document.querySelectorAll('.reveal, .reveal-left');
       var io = new IntersectionObserver(function(entries) {
-        entries.forEach(function(entry) {
-          if (entry.isIntersecting) {
-            entry.target.classList.add('visible');
-            io.unobserve(entry.target);
-          }
+        entries.forEach(function(e) {
+          if (e.isIntersecting) { e.target.classList.add('visible'); io.unobserve(e.target); }
         });
       }, { threshold: 0.06, rootMargin: '0px 0px -30px 0px' });
       els.forEach(function(el, i) {
-        el.style.transitionDelay = (i * 0.04) + 's';
+        el.style.transitionDelay = (i * 0.035) + 's';
         io.observe(el);
       });
     })();
 
-    /* ── Contact preference reveal ── */
-    document.querySelectorAll('input[name="contact_preference"]').forEach(function(radio) {
-      radio.addEventListener('change', function() {
-        document.getElementById('call-field').style.display =
-          this.value === 'Call first' ? 'block' : 'none';
-        document.getElementById('ig-field').style.display =
-          this.value === 'Instagram DM' ? 'block' : 'none';
+    /* ── Contact reveal ── */
+    document.querySelectorAll('input[name="contact_preference"]').forEach(function(r) {
+      r.addEventListener('change', function() {
+        document.getElementById('call-field').style.display = this.value === 'Call first' ? 'block' : 'none';
+        document.getElementById('ig-field').style.display = this.value === 'Instagram DM' ? 'block' : 'none';
       });
     });
 
-    /* ── Timer ── */
+    /* ── Sundial timer ── */
     var timerInterval = null;
     var STORAGE_KEY = 'iin_submission_time';
-    var FORTY_EIGHT_H = 48 * 60 * 60 * 1000;
+    var TOTAL_MS = 48 * 60 * 60 * 1000;
+
+    /* Sundial SVG: arc from 180° to 0° (left to right) over 48h
+       Centre: 100,100 Radius: 90
+       Start point (0% elapsed): 10,100 (left end of arc)
+       End point (100% elapsed): 190,100 (right end of arc) */
+    function updateSundial(remaining) {
+      var elapsed = TOTAL_MS - remaining;
+      var progress = Math.min(elapsed / TOTAL_MS, 1);
+      /* Angle: starts at 180° (left), sweeps to 0° (right) */
+      var angleDeg = 180 - (progress * 180);
+      var angleRad = angleDeg * Math.PI / 180;
+      var cx = 100, cy = 100, r = 90;
+      var dotX = cx + r * Math.cos(angleRad);
+      var dotY = cy - r * Math.sin(angleRad);
+
+      /* Move the dot */
+      var dot = document.getElementById('sundial-dot');
+      if (dot) { dot.setAttribute('cx', dotX.toFixed(2)); dot.setAttribute('cy', dotY.toFixed(2)); }
+
+      /* Draw progress arc from start to current dot position */
+      var prog = document.getElementById('sundial-progress');
+      if (prog) {
+        if (progress <= 0) {
+          prog.setAttribute('d', 'M 10 100 A 90 90 0 0 1 10 100');
+        } else {
+          var largeArc = angleDeg < 90 ? 1 : 0;
+          var endX = dotX.toFixed(2);
+          var endY = dotY.toFixed(2);
+          prog.setAttribute('d', 'M 10 100 A 90 90 0 ' + largeArc + ' 1 ' + endX + ' ' + endY);
+        }
+      }
+
+      /* Time display */
+      var h = Math.floor(remaining / 3600000);
+      var m = Math.floor((remaining % 3600000) / 60000);
+      var s = Math.floor((remaining % 60000) / 1000);
+      var timeEl = document.getElementById('sundial-time');
+      if (timeEl) timeEl.textContent = String(h).padStart(2,'0') + ':' + String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0');
+    }
 
     function startTimer(fromTime) {
       localStorage.setItem(STORAGE_KEY, fromTime.toString());
@@ -1129,37 +1125,30 @@
       if (timerInterval) clearInterval(timerInterval);
       timerInterval = setInterval(function() {
         var elapsed = Date.now() - parseInt(startTime);
-        var remaining = FORTY_EIGHT_H - elapsed;
+        var remaining = TOTAL_MS - elapsed;
         if (remaining <= 0) {
           clearInterval(timerInterval);
           localStorage.removeItem(STORAGE_KEY);
-          document.getElementById('timer-h').textContent = '00';
-          document.getElementById('timer-m').textContent = '00';
-          document.getElementById('timer-s').textContent = '00';
+          updateSundial(0);
+          var t = document.getElementById('sundial-time');
+          if (t) t.style.display = 'none';
+          var lang = document.documentElement.getAttribute('data-lang');
+          var done = lang === 'ko' ? document.getElementById('sundial-done-ko') : document.getElementById('sundial-done');
+          if (done) done.style.display = 'block';
           return;
         }
-        var h = Math.floor(remaining / 3600000);
-        var m = Math.floor((remaining % 3600000) / 60000);
-        var s = Math.floor((remaining % 60000) / 1000);
-        var elH = document.getElementById('timer-h');
-        var elM = document.getElementById('timer-m');
-        var elS = document.getElementById('timer-s');
-        elH.textContent = String(h).padStart(2, '0');
-        elM.textContent = String(m).padStart(2, '0');
-        elS.textContent = String(s).padStart(2, '0');
-        elS.classList.add('tick');
-        setTimeout(function() { elS.classList.remove('tick'); }, 300);
+        updateSundial(remaining);
       }, 1000);
     }
 
-    /* Check on load if a timer is already running */
     (function() {
       var saved = localStorage.getItem(STORAGE_KEY);
       if (saved) {
         var elapsed = Date.now() - parseInt(saved);
-        if (elapsed < FORTY_EIGHT_H) {
+        if (elapsed < TOTAL_MS) {
           document.getElementById('intake-form').style.display = 'none';
           document.getElementById('success-msg').classList.add('visible');
+          updateSundial(TOTAL_MS - elapsed);
           runTimer(parseInt(saved));
         } else {
           localStorage.removeItem(STORAGE_KEY);
@@ -1191,10 +1180,9 @@
       },
       onError: function() {
         var lang = document.documentElement.getAttribute('data-lang');
-        var msg = lang === 'ko'
+        alert(lang === 'ko'
           ? '문제가 발생했습니다. iinstudio@proton.me 로 직접 이메일을 보내주세요.'
-          : 'Something went wrong. Please email iinstudio@proton.me directly.';
-        alert(msg);
+          : 'Something went wrong. Please email iinstudio@proton.me directly.');
       }
     });
   </script>
