@@ -2143,7 +2143,6 @@ html[data-lang="ko"] #page-form.active .wordmark-bg {
   backdrop-filter: blur(22px) saturate(1.04) contrast(1.02) !important;
   box-shadow:
     inset 0 0 0 1px rgba(255,255,255,0.42),
-    inset 0 14px 28px rgba(255,255,255,0.12),
     0 12px 30px rgba(17,18,21,0.055) !important;
   transform: none !important;
   transition:
@@ -3523,6 +3522,17 @@ html[data-theme="dark"] #page-form.active .tile {
   background: rgba(9,10,11,0.56) !important;
   border-color: rgba(244,244,241,0.16) !important;
 }
+/* the frosted nth-child(3n)/last-three tiles carry a white inset shadow tuned for the
+   light paper background; without this reset it leaks through as a white rectangle on
+   the dark panels (the base dark .tile rule above only resets background + border, not
+   box-shadow). Give dark its own subtle inset instead. */
+html[data-theme="dark"] #page-form.active .tile,
+html[data-theme="dark"] #page-form.active .tile:nth-child(3n),
+html[data-theme="dark"] #page-form.active .tile:nth-last-child(-n+3) {
+  box-shadow:
+    inset 0 0 0 1px rgba(244,244,241,0.10),
+    0 12px 30px rgba(0,0,0,0.34) !important;
+}
 html[data-theme="dark"] #page-form.active .tile:hover,
 html[data-theme="dark"] #page-form.active .tile:active,
 html[data-theme="dark"] #page-form.active .tile:focus-within {
@@ -3730,14 +3740,14 @@ html[data-theme="dark"] #page-landing .invite-panel:focus-within .ptext {
 /* Dark form: the wordmark must be visible even before hover. */
 html[data-theme="dark"] #page-form.active .wordmark-bg {
   color: #f4f4f1 !important;
-  opacity: 0.88 !important;
+  opacity: 0.55 !important;
   text-shadow: 0 0 24px rgba(244,244,241,0.08) !important;
 }
 html[data-theme="dark"] #page-form.active .tile {
-  background: rgba(9,10,11,0.34) !important;
+  background: rgba(9,10,11,0.62) !important;
   border-color: rgba(244,244,241,0.20) !important;
-  -webkit-backdrop-filter: blur(15px) saturate(105%) !important;
-  backdrop-filter: blur(15px) saturate(105%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(105%) !important;
+  backdrop-filter: blur(20px) saturate(105%) !important;
 }
 html[data-theme="dark"] #page-form.active .tile-label {
   background: rgba(9,10,11,0.78) !important;
@@ -7760,7 +7770,7 @@ var SECTIONS = [
         options:[['','—','—'],['Single artwork','Single artwork','싱글 아트워크'],['EP artwork','EP artwork','EP 아트워크'],['Album artwork','Album artwork','앨범 아트워크'],['Motion Reel','Motion Reel (e.g. a visualiser)','모션 릴 (예: 비주얼라이저)'],['Artwork + Motion Reel','Artwork + Motion Reel','아트워크 + 모션 릴'],['Not sure yet','Not sure yet','아직 정해지지 않았어요'],['Other','Other (tell us below)','기타 (아래에 적어 주세요)']] },
       { type:'textarea', name:'additional_deliverables', label_en:'Additional deliverables / Anything else', label_ko:'추가 결과물 / 기타 사항', rows:2 },
       { type:'select', name:'timeline', label_en:'Timeline', label_ko:'일정', required:true,
-        options:[['','—','—'],['Less than 2 weeks','Less than 2 weeks','2주 미만'],['2 to 4 weeks','2 to 4 weeks','2–4주'],['1 to 2 months','1 to 2 months','1–2개월'],['Flexible','Flexible','조율 가능']] },
+        options:[['','—','—'],['Less than 2 weeks','Less than 2 weeks','2주 미만'],['2 to 4 weeks','2 to 4 weeks','2–4주'],['1 to 2 months','1 to 2 months','1–2개월'],['2 to 3 months','2 to 3 months','2–3개월'],['Flexible','Flexible','조율 가능']] },
       { type:'select', name:'budget', label_en:'Budget range', label_ko:'예산 범위', required:true, note_en:'(no wrong answer)', note_ko:'(정답은 없어요)',
         options:[['','—','—'],['Under $1,000','Under $1,000','$1,000 미만'],['$1,000 to $2,000','$1,000 to $2,000','$1,000–$2,000'],['$2,000 to $4,000','$2,000 to $4,000','$2,000–$4,000'],['$4,000+','$4,000+','$4,000 이상'],['Not sure yet',"Let's discuss",'상담 후 결정']] },
     ]
@@ -8967,6 +8977,18 @@ submitBrief = function(){
    Supersedes every earlier duplicate. 1) all four orbit CTAs identical
    2) receipt/success screen layout, alignment + hover choreography     */
 
+/* ---------- 0. TILE REPAINT ISOLATION ----------
+   The dark rectangular bands that flashed across the tiles whenever the submit
+   CTA animated on hover were a compositor artifact: the CTA's hover animation
+   forced a repaint, and the tiles' layered backdrop-filter regions repainted with
+   stale dark seams at their layer boundaries (a known Chrome backdrop-filter bug).
+   Giving each tile a stable own composited layer (will-change) makes its backdrop
+   region repaint cleanly and independently of the CTA's animation — no ghost
+   bands — without clipping the tile's drop shadow the way `contain` would. */
+#page-form.active .tile-grid { isolation: isolate !important; }
+#page-form.active .tile { will-change: backdrop-filter !important; }
+#page-form .submit-orbit, #page-form.active .submit-orbit { will-change: transform !important; }
+
 /* ---------- 1. UNIFIED ORBIT CTAs (let's get going / next / send brief / submit again) ---------- */
 .cta-orbit, .submit-orbit, .section-save, .success-again,
 #page-form .submit-orbit, #page-form.active .submit-orbit,
@@ -9027,6 +9049,27 @@ html[data-lang="ko"] #page-form.sent .success-again .cta-ring-text {
 #page-form.sent .success-again:hover .restart-arrow, #page-form.sent .success-again:focus-visible .restart-arrow { transform: rotate(-30deg) !important; }
 #page-form.sent .success-again:hover, #page-form.sent .success-again:focus-visible { background: none !important; color: var(--ink) !important; border: none !important; }
 #page-form.sent .success-again:hover .cta-arrow, #page-form.sent .success-again:focus-visible .cta-arrow { stroke: var(--ink) !important; }
+/* Dark mode was filling the whole 104px button white on hover (earlier rules set
+   background: var(--paper)); light mode just keeps it transparent and shifts the
+   ring/arrow. Force dark to match light — no filled circle, same subtle treatment. */
+html[data-theme="dark"] #page-form.sent .success-again,
+html[data-theme="dark"] #page-form.sent .success-again:hover,
+html[data-theme="dark"] #page-form.sent .success-again:focus-visible,
+html[data-theme="dark"] #page-form.sent #success-stage > .success-again:hover,
+html[data-theme="dark"] #page-form.sent #success-stage > .success-again:focus-visible {
+  background: none !important; background-color: transparent !important; border: none !important; box-shadow: none !important;
+}
+html[data-theme="dark"] #page-form.sent .success-again::before,
+html[data-theme="dark"] #page-form.sent .success-again::after {
+  display: none !important; content: none !important; opacity: 0 !important; background: none !important;
+}
+html[data-theme="dark"] #page-form.sent .success-again .cta-ring { stroke: color-mix(in srgb, var(--ink) 34%, transparent) !important; }
+html[data-theme="dark"] #page-form.sent .success-again:hover .cta-ring,
+html[data-theme="dark"] #page-form.sent .success-again:focus-visible .cta-ring { stroke: var(--ink) !important; }
+html[data-theme="dark"] #page-form.sent .success-again .cta-arrow { stroke: var(--ink) !important; }
+html[data-theme="dark"] #page-form.sent .success-again:hover .cta-arrow,
+html[data-theme="dark"] #page-form.sent .success-again:focus-visible .cta-arrow { stroke: var(--ink) !important; }
+html[data-theme="dark"] #page-form.sent .success-again .cta-ring-text { fill: var(--ink) !important; }
 
 @media (max-width: 760px) {
   .cta-orbit, .submit-orbit, .section-save, .success-again,
@@ -9065,10 +9108,10 @@ html[data-lang="ko"] #page-form.sent .success-again .cta-ring-text {
 /* language toggle must win: NO !important on rc-line display */
 #page-form.sent #success-stage .rc-line { position: relative !important; display: inline-block; }
 #page-form.sent #success-stage .rc-done { display: block !important; transition: transform .5s cubic-bezier(.2,.7,.2,1) !important; }
-/* (for now) sits tight under "all done" — proximity: they read as one unit */
+/* (for now) sits tight under "all done" — hidden until the headline is hovered/focused, then fades in to full opacity alongside the lift */
 #page-form.sent #success-stage .rc-fornow {
   position: absolute !important; left: 0 !important; right: 0 !important; top: 100% !important; display: block !important;
-  margin-top: 0.12em !important; font-size: clamp(0.64rem, 0.92vw, 0.8rem) !important; font-weight: 900 !important; letter-spacing: 0.02em !important;
+  margin-top: var(--fornow-gap, 0.12em) !important; font-size: clamp(0.64rem, 0.92vw, 0.8rem) !important; font-weight: 900 !important; letter-spacing: 0.02em !important;
   color: var(--ink) !important; opacity: 0 !important; transform: translateY(0.2em) !important;
   transition: opacity .5s ease, transform .5s cubic-bezier(.2,.7,.2,1) !important; pointer-events: none !important;
 }
@@ -9087,7 +9130,7 @@ html[data-lang="ko"] #page-form.sent .success-again .cta-ring-text {
   text-align: center !important; white-space: nowrap !important;
   transition: transform .5s cubic-bezier(.2,.7,.2,1) !important;
 }
-html[data-lang="ko"] #page-form.sent #success-stage .success-sub { letter-spacing: 0.04em !important; }
+html[data-lang="ko"] #page-form.sent #success-stage .success-sub { letter-spacing: 0.04em !important; font-size: clamp(0.76rem, 1.09vw, 0.95rem) !important; }
 #page-form.sent #success-stage.is-head-open .success-sub { transform: translateY(5px) !important; }
 
 /* timer — two colons pinned to the outer edges of the shared width W; digit groups reveal on hover */
@@ -9136,12 +9179,147 @@ html[data-lang="ko"] #page-form.sent #success-stage .rc-complete {
   font-family: 'Archivo', sans-serif !important; font-size: clamp(0.95rem,1.5vw,1.2rem) !important;
   color: var(--ink) !important; text-transform: lowercase !important; letter-spacing: 0.03em !important;
 }
+
+/* Dark-mode landing panels: an older hover rule sets filter: inherit on .ptext, which
+   wipes out the invert(1) that makes the panel graphic render white against the dark
+   background — on hover it silently reverted to its unfiltered (black-on-transparent)
+   state, i.e. invisible against the dark panel. Keep the same invert on hover/focus
+   that the panel already uses at rest, so hover is just the existing subtle tilt/lift
+   with no color change. */
+html[data-theme="dark"] #page-landing .invite-panel:hover .ptext,
+html[data-theme="dark"] #page-landing .invite-panel:focus-within .ptext {
+  filter: invert(1) contrast(1.04) brightness(0.98) !important;
+  -webkit-mask-image: none !important;
+  mask-image: none !important;
+}
 </style>
 
 <script>
 /* iin — final receipt behaviour: measure "all done" width, drive head-hover reveal */
 (function(){
   function stage(){ return document.getElementById('success-stage'); }
+  function textRect(el){
+    // A Range around the element's own text gives a box closer to the glyphs
+    // themselves than the element's line-height box does, in every engine —
+    // this is what lets the gap-correction below work without assuming
+    // anything about which font actually ended up rendering.
+    try {
+      var r = document.createRange();
+      r.selectNodeContents(el);
+      var rect = r.getBoundingClientRect();
+      if (rect && rect.height > 0) return rect;
+    } catch(e) {}
+    return el.getBoundingClientRect();
+  }
+  // Absolute-page Y of the topmost / bottommost inked pixel of a single line of text.
+  // Rasterises the line into a canvas the height of its CSS line box (text centred, as
+  // in the on-page box), finds where ink sits inside it, then maps that back onto the
+  // element's on-page rect. Font-agnostic — measures glyph-to-glyph, not box-to-box.
+  function inkRowsInBox(el){
+    try {
+      var cs = getComputedStyle(el);
+      var fontSize = parseFloat(cs.fontSize);
+      var text = (el.textContent || '').trim();
+      if (!(fontSize > 0) || !text) return null;
+      var rect = textRect(el);
+      var boxH = rect.height;
+      if (boxH < 2) return null;
+      var lineH = parseFloat(cs.lineHeight); if (!(lineH > 0)) lineH = boxH;
+      var pad = Math.ceil(fontSize);
+      var canvas = inkRowsInBox._c || (inkRowsInBox._c = document.createElement('canvas'));
+      var ctx = canvas.getContext('2d');
+      var font = cs.fontStyle + ' ' + cs.fontWeight + ' ' + fontSize + 'px ' + cs.fontFamily;
+      ctx.font = font;
+      var w = Math.ceil(ctx.measureText(text).width) + pad * 2;
+      var h = Math.ceil(lineH) + pad * 2;
+      canvas.width = w; canvas.height = h;
+      ctx.font = font;
+      // Place the text's line box at a known top (y = pad) using textBaseline 'top'.
+      // The on-page CSS line box top corresponds to this canvas y=pad, so mapping ink
+      // rows back to the page is a simple (row - pad) offset from rect.top — accurate
+      // regardless of font size (no baseline-centre approximation error).
+      ctx.textBaseline = 'top';
+      ctx.fillStyle = '#000';
+      ctx.clearRect(0, 0, w, h);
+      // vertical centre of glyph line within the CSS line box = (lineH - fontSize)/2 lead
+      var lead = (lineH - fontSize) / 2;
+      ctx.fillText(text, pad, pad + lead);
+      var data = ctx.getImageData(0, 0, w, h).data;
+      var top = -1, bottom = -1;
+      for (var y = 0; y < h; y++){ var has=false; for (var x = 0; x < w; x++){ if (data[(y*w+x)*4+3] > 24){ has=true; break; } } if(has){ if(top===-1)top=y; bottom=y; } }
+      if (top === -1) return null;
+      // canvas y=pad == on-page rect.top
+      return { inkTopPage: rect.top + (top - pad), inkBottomPage: rect.top + (bottom - pad) };
+    } catch(e){ return null; }
+  }
+  function elemInkTop(el){ var o = inkRowsInBox(el); return o ? o.inkTopPage : textRect(el).top; }
+  function elemInkBottom(el){ var o = inkRowsInBox(el); return o ? o.inkBottomPage : textRect(el).bottom; }
+  function inkHeight(el){
+    try {
+      var cs = getComputedStyle(el);
+      var fontSize = parseFloat(cs.fontSize);
+      if (!(fontSize > 0)) return 0;
+      var text = (el.textContent || '').trim();
+      if (!text) return 0;
+      var pad = Math.ceil(fontSize * 0.6);
+      var canvas = inkHeight._c || (inkHeight._c = document.createElement('canvas'));
+      var ctx = canvas.getContext('2d');
+      var font = cs.fontStyle + ' ' + cs.fontWeight + ' ' + fontSize + 'px ' + cs.fontFamily;
+      ctx.font = font;
+      var metrics = ctx.measureText(text);
+      var w = Math.ceil(metrics.width) + pad * 2;
+      var h = Math.ceil(fontSize * 2) + pad * 2;
+      canvas.width = w; canvas.height = h;
+      ctx.font = font;
+      ctx.textBaseline = 'alphabetic';
+      ctx.fillStyle = '#000';
+      ctx.clearRect(0, 0, w, h);
+      ctx.fillText(text, pad, h - pad);
+      var data = ctx.getImageData(0, 0, w, h).data;
+      var top = -1, bottom = -1;
+      for (var y = 0; y < h; y++){
+        var rowHas = false;
+        for (var x = 0; x < w; x++){ if (data[(y * w + x) * 4 + 3] > 24){ rowHas = true; break; } }
+        if (rowHas){ if (top === -1) top = y; bottom = y; }
+      }
+      if (top === -1) return 0;
+      return bottom - top + 1;
+    } catch(e){ return 0; }
+  }
+  // GROUND-TRUTH English reference capture, for Korean-first loads. Flips the document's
+  // data-lang to "en" (which swaps the CSS-driven [data-en]/[data-ko] visibility AND the
+  // language-scoped letter-spacing/font-size rules), forces synchronous layout, measures
+  // the REAL English caption width and headline ink height, then flips back. All within
+  // one JS task — the browser never paints the intermediate state, so nothing flashes.
+  // This replaced two canvas estimators that read font metrics off the Korean-styled
+  // elements and produced a too-small English width (shrinking the whole Korean page).
+  function captureEnglishRefs(st, sub){
+    var htmlEl = document.documentElement;
+    var prevLang = htmlEl.getAttribute('data-lang');
+    htmlEl.setAttribute('data-lang', 'en');
+    // span visibility is set via INLINE styles by applyLangVisibility, not only CSS —
+    // the attribute flip alone leaves [data-en] spans display:none. Run it for real.
+    if (typeof applyLangVisibility === 'function') applyLangVisibility();
+    try {
+      var W = Math.round(sub.getBoundingClientRect().width);   // forces sync layout
+      if (W > 40) st.setAttribute('data-ref-w', String(W));
+      var enLine = null;
+      Array.prototype.forEach.call(st.querySelectorAll('.rc-line[data-en]'), function(l){ enLine = l; });
+      var enDone = enLine ? enLine.querySelector('.rc-done') : null;
+      if (enDone && W > 40){
+        enLine.style.fontSize = '';
+        var natW = enDone.getBoundingClientRect().width;
+        if (natW > 10){
+          var csEn = parseFloat(getComputedStyle(enLine).fontSize);
+          enLine.style.fontSize = (csEn * W / natW) + 'px';
+        }
+        var enInk = inkHeight(enDone);
+        if (enInk > 8) st.setAttribute('data-ref-ink-h', String(Math.round(enInk * 100) / 100));
+      }
+    } catch(e) {}
+    htmlEl.setAttribute('data-lang', prevLang || 'ko');
+    if (typeof applyLangVisibility === 'function') applyLangVisibility();
+  }
   function measureDone(){
     var st = stage(); if (!st) return;
     var sub = st.querySelector('.success-sub');
@@ -9149,17 +9327,119 @@ html[data-lang="ko"] #page-form.sent #success-stage .rc-complete {
     var done = null, rcline = null;
     Array.prototype.forEach.call(st.querySelectorAll('.rc-line'), function(l){ if (l.offsetParent !== null){ var d=l.querySelector('.rc-done'); if(d){ done=d; rcline=l; } } });
     if (!sub) return;
-    var W = Math.round(sub.getBoundingClientRect().width);
-    if (W < 40) return;               // hidden / not laid out yet
+    // Reference width drives both the headline scale and the timer size. Measuring
+    // whichever language happens to be visible made Korean render tiny — "연락드리기까지"
+    // is naturally much narrower than "EXPECT TO HEAR BACK WITHIN", so the whole receipt
+    // shrank along with it. Anchor to the English measurement (the default language on
+    // load) and reuse it for Korean too, so both languages render at the same scale.
+    var lang = document.documentElement.getAttribute('data-lang') || 'en';
+    var W;
+    if (lang === 'en') {
+      W = Math.round(sub.getBoundingClientRect().width);
+      if (W < 40) return;             // hidden / not laid out yet
+      st.setAttribute('data-ref-w', String(W));
+    } else {
+      var cachedW = parseFloat(st.getAttribute('data-ref-w') || '0');
+      if (!(cachedW > 40)) {
+        // English never measured (Korean-first load). Capture GROUND TRUTH: flip the
+        // document to English for one synchronous measurement, then flip back. Layout
+        // is forced synchronously and no paint happens mid-task, so nothing flashes.
+        // THROTTLED: the flip re-triggers measureDone via the data-lang MutationObserver,
+        // so a failed capture (layout not ready yet) must not retry in a tight loop.
+        var now = Date.now();
+        if (!measureDone._lastCapture || now - measureDone._lastCapture > 300) {
+          measureDone._lastCapture = now;
+          captureEnglishRefs(st, sub);
+        }
+        cachedW = parseFloat(st.getAttribute('data-ref-w') || '0');
+        if (!(cachedW > 40)) {
+          // Layout wasn't ready (stage hidden / zero width). Retry shortly — nothing
+          // external is guaranteed to call measureDone again after this point.
+          clearTimeout(measureDone._retryT);
+          measureDone._retryT = setTimeout(measureDone, 350);
+        }
+      }
+      W = cachedW > 40 ? cachedW : Math.round(sub.getBoundingClientRect().width);
+      if (W < 40) return;
+    }
     st.style.setProperty('--done-w', W + 'px');
-    // scale "all done" (whole line, so "(for now)" scales with it) so its width == W
+    // scale "all done" so its width == W (English), then match Korean to English's
+    // actual rendered INK HEIGHT rather than guessing a multiplier. English sets the
+    // target height on first render; Korean re-scales until its glyphs occupy the same
+    // vertical pixels — so both read at genuinely equal size in whatever font loads.
     if (done && rcline){
       rcline.style.fontSize = '';     // reset to CSS size before measuring (no compounding)
-      var nat = done.getBoundingClientRect().width;
-      if (nat > 10){ var cs = parseFloat(getComputedStyle(rcline).fontSize); rcline.style.fontSize = (cs * W / nat) + 'px'; }
+      if (lang === 'en') {
+        var natW = done.getBoundingClientRect().width;
+        if (natW > 10){
+          var csEn = parseFloat(getComputedStyle(rcline).fontSize);
+          rcline.style.fontSize = (csEn * W / natW) + 'px';
+        }
+        // cache English's rendered ink height as the cross-language size target
+        var enInk = inkHeight(done);
+        if (enInk > 8) st.setAttribute('data-ref-ink-h', String(Math.round(enInk * 100) / 100));
+      } else {
+        // Korean: iterate font-size until its ink height matches English's cached height
+        // (captured from the real English DOM render — either English displayed earlier,
+        // or captureEnglishRefs measured it during the width step above).
+        var refInkH = parseFloat(st.getAttribute('data-ref-ink-h') || '0');
+        var targetInk = refInkH;   // exact match to English's rendered ink height
+        if (targetInk > 8) {
+          // start from a width-match guess, then close the gap on height in 2 passes
+          var natWk = done.getBoundingClientRect().width;
+          var csKo = parseFloat(getComputedStyle(rcline).fontSize);
+          var size = natWk > 10 ? (csKo * W / natWk) : csKo;
+          rcline.style.fontSize = size + 'px';
+          for (var pass = 0; pass < 3; pass++){
+            var curInk = inkHeight(done);
+            if (curInk < 4) break;
+            var next = size * (targetInk / curInk);
+            // clamp per-pass change so a bad measurement can't explode the size
+            next = Math.max(size * 0.6, Math.min(size * 1.7, next));
+            if (Math.abs(next - size) < 0.4) { size = next; rcline.style.fontSize = size + 'px'; break; }
+            size = next;
+            rcline.style.fontSize = size + 'px';
+          }
+        } else {
+          // no cached target yet (Korean shown before English ever laid out): width-match
+          var natWk2 = done.getBoundingClientRect().width;
+          if (natWk2 > 10){ var csKo2 = parseFloat(getComputedStyle(rcline).fontSize); rcline.style.fontSize = (csKo2 * W / natWk2) + 'px'; }
+        }
+      }
     }
-    // timer: outer width == W, digits sized to fill it
-    if (cd){ cd.style.setProperty('--timer-w', W + 'px'); cd.style.setProperty('--timer-fs', (W / 6.3) + 'px'); }
+    // timer: outer width == the HEADLINE's rendered width, digits sized to fill it.
+    // On English the headline is scaled to W, so this is identical to the old W-based
+    // sizing. On Korean the headline is ink-height-matched and lands wider than W —
+    // the timer now follows it, so headline and timer widths agree on BOTH pages.
+    if (cd){
+      var timerW = 0;
+      if (done) timerW = Math.round(done.getBoundingClientRect().width);
+      if (!(timerW > 40)) timerW = W;
+      cd.style.setProperty('--timer-w', timerW + 'px');
+      cd.style.setProperty('--timer-fs', (timerW / 6.3) + 'px');
+    }
+
+    // caption sizing is pure CSS (see the ko .success-sub rule in the authoritative
+    // block) — deterministic, theme-independent, order-independent. Nothing to do here.
+
+    // FINAL STEP — done last, after every size settles. The gap under "all done" should
+    // read the same as the gap between the caption and the timer digits below it, so the
+    // two text blocks on the receipt breathe identically. That reference gap scales with
+    // the timer size; 0.30 × the timer font-size tracks it across viewports.
+    // The (for now) line is absolutely positioned (top:100%), so we can't rasterise its
+    // position reliably; instead we derive the ink gap that exists at --fornow-gap:0
+    // from the headline size + a per-script ratio, then correct to the target.
+    if (done && rcline){
+      var fornowEl = rcline.querySelector('.rc-fornow');
+      if (fornowEl){
+        var doneFs = parseFloat(getComputedStyle(rcline).fontSize) || 70;
+        var ratio = (lang === 'ko') ? 0.16 : 0.32;
+        var inkGapAtZero = doneFs * ratio;
+        var tFs = cd ? (parseFloat(getComputedStyle(cd).getPropertyValue('--timer-fs')) || 0) : 0;
+        var targetGap = tFs > 0 ? Math.round(tFs * 0.30) : 12;
+        st.style.setProperty('--fornow-gap', Math.round(targetGap - inkGapAtZero) + 'px');
+      }
+    }
   }
   window.iinMeasureDone = measureDone;
   function bindHead(){
@@ -9211,7 +9491,14 @@ html[data-lang="ko"] #page-form.sent #success-stage .rc-complete {
     window.successTimer = setInterval(window.updateSuccessCountdown, 1000);
     requestAnimationFrame(function(){ measureDone(); setTimeout(measureDone, 140); setTimeout(measureDone, 520); });
   };
-  window.addEventListener('resize', function(){ requestAnimationFrame(measureDone); });
+  window.addEventListener('resize', function(){
+    // cached English refs are viewport-dependent — drop them so the next measure
+    // re-captures at the new size (otherwise Korean keeps the stale scale)
+    var st = stage();
+    if (st){ st.removeAttribute('data-ref-w'); st.removeAttribute('data-ref-ink-h'); }
+    measureDone._lastCapture = 0;
+    requestAnimationFrame(measureDone);
+  });
   document.addEventListener('DOMContentLoaded', function(){
     bindHead(); requestAnimationFrame(measureDone);
     var pf = document.getElementById('page-form');
@@ -9223,6 +9510,83 @@ html[data-lang="ko"] #page-form.sent #success-stage .rc-complete {
   });
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(measureDone);
   try { new MutationObserver(measureDone).observe(document.documentElement, { attributes:true, attributeFilter:['data-lang','data-theme'] }); } catch(e){}
+})();
+</script>
+
+<script id="iin-v53-live-completion">
+/* iin — section counter was only updating on an explicit per-section submit; a
+   section left "filled but closed via X" never counted. This recomputes
+   completion from the actual answers on every change, so N/6 always matches
+   how many sections have been genuinely dealt with.
+
+   A section with required fields is "done" once those fields are filled.
+   A section with NO required fields (several are answer-none-or-all) can't
+   be judged by field-filling alone, so it only counts once the person has
+   actually opened and left it — otherwise every optional section would show
+   as pre-completed before anyone touched anything. */
+(function(){
+  'use strict';
+  var VISITED_KEY = 'iin_brief_v47_visited';
+  var visited = {};
+  try { visited = JSON.parse(localStorage.getItem(VISITED_KEY) || '{}') || {}; } catch(e){}
+  function saveVisited(){ try { localStorage.setItem(VISITED_KEY, JSON.stringify(visited)); } catch(e){} }
+
+  function emailOk(v){
+    if (typeof window.isValidEmail === 'function') return window.isValidEmail(v);
+    return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(String(v || '').trim());
+  }
+  function fieldRequiredNow(f){
+    if (!f) return false;
+    if (f.required) return true;
+    if (f.required_if && typeof ruleMatches === 'function') return ruleMatches(f.required_if, answers || {});
+    return false;
+  }
+  function sectionIsComplete(sec){
+    var reqFields = sec.fields.filter(fieldRequiredNow);
+    if (!reqFields.length) return !!visited[sec.id];
+    return reqFields.every(function(f){
+      var v = String((answers && answers[f.name]) || '').trim();
+      if (!v) return false;
+      if (f.type === 'email' && !emailOk(v)) return false;
+      return true;
+    });
+  }
+  function recomputeCompletion(){
+    if (typeof SECTIONS === 'undefined' || typeof completed === 'undefined') return;
+    SECTIONS.forEach(function(sec){
+      var isDone = sectionIsComplete(sec);
+      completed[sec.id] = isDone;
+      var tile = document.getElementById('tile-' + sec.id);
+      if (tile) tile.classList.toggle('done', isDone);
+    });
+    try { if (typeof saveLocal === 'function') saveLocal(); } catch(e) {}
+    if (typeof refreshStatusText === 'function') refreshStatusText();
+    if (typeof updateProgress === 'function') updateProgress();
+  }
+  window.recomputeCompletion = recomputeCompletion;
+
+  document.addEventListener('change', function(e){
+    if (e.target && e.target.form && e.target.form.id === 'modal-form') recomputeCompletion();
+  }, true);
+  document.addEventListener('input', function(e){
+    var t = e.target;
+    if (t && t.form && t.form.id === 'modal-form' && (t.tagName === 'TEXTAREA' || t.type === 'text' || t.type === 'email')) recomputeCompletion();
+  }, true);
+
+  var priorClose = window.closeModal;
+  window.closeModal = function(){
+    var box = document.getElementById('modal-box');
+    var secId = box && box.getAttribute('data-section');
+    if (typeof priorClose === 'function') priorClose();
+    if (secId) { visited[secId] = true; saveVisited(); }
+    recomputeCompletion();
+  };
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', recomputeCompletion);
+  } else {
+    recomputeCompletion();
+  }
 })();
 </script>
 
