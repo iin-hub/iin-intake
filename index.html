@@ -7772,7 +7772,7 @@ var SECTIONS = [
       { type:'select', name:'timeline', label_en:'Timeline', label_ko:'일정', required:true,
         options:[['','—','—'],['Less than 2 weeks','Less than 2 weeks','2주 미만'],['2 to 4 weeks','2 to 4 weeks','2–4주'],['1 to 2 months','1 to 2 months','1–2개월'],['2 to 3 months','2 to 3 months','2–3개월'],['Flexible','Flexible','조율 가능']] },
       { type:'select', name:'budget', label_en:'Budget range', label_ko:'예산 범위', required:true, note_en:'(no wrong answer)', note_ko:'(정답은 없어요)',
-        options:[['','—','—'],['Under $1,000','Under $1,000','$1,000 미만'],['$1,000 to $2,000','$1,000 to $2,000','$1,000–$2,000'],['$2,000 to $4,000','$2,000 to $4,000','$2,000–$4,000'],['$4,000+','$4,000+','$4,000 이상'],['Not sure yet',"Let's discuss",'상담 후 결정']] },
+        options:[['','—','—'],['Under $300','Under $300','$300 미만'],['$300 to $1,000','$300 to $1,000','$300–$1,000'],['$1,000 to $2,000','$1,000 to $2,000','$1,000–$2,000'],['$2,000 to $4,000','$2,000 to $4,000','$2,000–$4,000'],['$4,000+','$4,000+','$4,000 이상'],['Not sure yet',"Let's discuss",'상담 후 결정']] },
     ]
   },
   {
@@ -9192,6 +9192,50 @@ html[data-theme="dark"] #page-landing .invite-panel:focus-within .ptext {
   -webkit-mask-image: none !important;
   mask-image: none !important;
 }
+
+/* Mobile: keep the desktop 3 x 2 section grid, scaled to the screen, instead of stacking into one column. */
+@media (max-width: 760px) {
+  html body #page-form.active .grid-stage {
+    width: min(406px, 92vw) !important;
+    max-width: none !important;
+  }
+  html body #page-form.active .tile-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    width: min(390px, 88vw) !important;
+    max-width: none !important;
+    gap: clamp(3px, 1vw, 5px) !important;
+  }
+  html body #page-form.active .tile-grid .tile {
+    aspect-ratio: 1 / 1 !important;
+    min-height: 0 !important;
+    height: auto !important;
+  }
+  html body #page-form.active .tile-grid .tile-label {
+    height: 29px !important;
+    min-height: 29px !important;
+    padding: 0.34rem 0.4rem 0.32rem !important;
+  }
+  html body #page-form.active .tile-grid .tile-label-text {
+    grid-template-columns: 1.05rem minmax(0, 1fr) !important;
+    align-items: center !important;
+  }
+  html body #page-form.active .tile-grid .tile-title {
+    font-size: 7.6px !important;
+    letter-spacing: 0.05em !important;
+    line-height: 1.15 !important;
+    white-space: normal !important;
+  }
+  html body #page-form.active .tile-grid .tile-num {
+    font-size: 5.8px !important;
+  }
+  html body #page-form.active .wordmark-bg {
+    font-size: min(261px, 59vw) !important;
+  }
+  /* Headline scales down with the screen so the whole line fits, same look as desktop. */
+  html:not([data-lang="ko"]) body #page-form.active .form-headline {
+    font-size: min(38px, 8.1vw) !important;
+  }
+}
 </style>
 
 <script>
@@ -9587,6 +9631,92 @@ html[data-theme="dark"] #page-landing .invite-panel:focus-within .ptext {
   } else {
     recomputeCompletion();
   }
+})();
+</script>
+
+<script id="iin-mobile-fit-text">
+/* Mobile only (760px and below): the headline and the two intro lines in each language
+   are scaled so each sits on one line, measured from the real rendered text, so it holds
+   whatever font the phone actually loads. Desktop and tablet are untouched. */
+(function(){
+  var MQ = window.matchMedia('(max-width: 760px)');
+  function shown(el){ return !!el && getComputedStyle(el).display !== 'none'; }
+  function px(el){ return parseFloat(getComputedStyle(el).fontSize) || 0; }
+  function setSize(el, size){ el.style.setProperty('font-size', size.toFixed(2) + 'px', 'important'); }
+  function clear(el){ el.style.removeProperty('font-size'); el.style.removeProperty('white-space'); el.style.removeProperty('max-width'); }
+  function naturalWidth(el){
+    var prev = el.style.width;
+    el.style.width = 'max-content';
+    var w = el.offsetWidth;
+    el.style.width = prev;
+    return w;
+  }
+  function targetWidth(){
+    var g = document.getElementById('tile-grid');
+    var w = g ? g.offsetWidth : 0;
+    return (w || window.innerWidth * 0.88) * 0.98;
+  }
+  function fit(){
+    var page = document.getElementById('page-form');
+    var h = document.querySelector('#page-form .form-headline');
+    if (!page || !h) return;
+    var ps = Array.prototype.slice.call(document.querySelectorAll('#page-form .form-intro > p'));
+    var lines = Array.prototype.slice.call(h.children);
+    if (!MQ.matches || !page.classList.contains('active')) { clear(h); lines.forEach(clear); ps.forEach(clear); return; }
+    var target = targetWidth();
+
+    /* Headline: scale the h1 from the width of its visible language line. */
+    var line = lines.filter(shown)[0];
+    h.style.removeProperty('font-size');
+    h.style.setProperty('white-space', 'nowrap', 'important');
+    h.style.setProperty('max-width', 'none', 'important');
+    lines.forEach(function(l){ l.style.setProperty('white-space', 'nowrap', 'important'); });
+    if (line) {
+      for (var i = 0; i < 4; i++) {
+        var w = line.offsetWidth;
+        if (!(w > 0) || w <= target) break;
+        setSize(h, px(h) * target / w);
+      }
+    }
+
+    /* Intro: each visible line on one line, both lines sharing the size of the longer one. */
+    ps.forEach(clear);
+    var vis = ps.filter(shown);
+    if (!vis.length) return;
+    vis.forEach(function(p){ p.style.setProperty('white-space', 'nowrap', 'important'); });
+    var size = Infinity;
+    vis.forEach(function(p){
+      var w = naturalWidth(p), base = px(p);
+      size = Math.min(size, w > target ? base * target / w : base);
+    });
+    vis.forEach(function(p){ setSize(p, size); });
+    for (var j = 0; j < 4; j++) {
+      var widest = Math.max.apply(null, vis.map(naturalWidth));
+      if (widest <= target) break;
+      size = size * target / widest;
+      vis.forEach(function(p){ setSize(p, size); });
+    }
+  }
+  var raf = 0;
+  function schedule(){
+    cancelAnimationFrame(raf);
+    raf = requestAnimationFrame(function(){ requestAnimationFrame(fit); });
+  }
+  window.addEventListener('resize', schedule);
+  window.addEventListener('orientationchange', schedule);
+  if (MQ.addEventListener) MQ.addEventListener('change', schedule);
+  if (document.fonts) {
+    if (document.fonts.ready) document.fonts.ready.then(schedule);
+    if (document.fonts.addEventListener) document.fonts.addEventListener('loadingdone', schedule);
+  }
+  document.addEventListener('click', function(e){
+    if (e.target && e.target.closest && e.target.closest('.lang-switch')) setTimeout(schedule, 60);
+  }, true);
+  var mo = new MutationObserver(schedule);
+  mo.observe(document.documentElement, { attributes: true, attributeFilter: ['data-lang'] });
+  var pf = document.getElementById('page-form');
+  if (pf) mo.observe(pf, { attributes: true, attributeFilter: ['class'] });
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', schedule); else schedule();
 })();
 </script>
 
